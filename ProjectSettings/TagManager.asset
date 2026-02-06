@@ -39,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2818212009
+    locked: 0
   - name: Wave
     uniqueID: 1327473311
     locked: 0
