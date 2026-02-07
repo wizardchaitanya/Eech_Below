@@ -6,6 +6,9 @@ public class EchoReveal : MonoBehaviour
 {
     SpriteRenderer sr;
 
+    public float fadeSpeed = 3f;
+    public float visibleTime = 5f;
+
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -16,7 +19,6 @@ public class EchoReveal : MonoBehaviour
     {
         if (other.CompareTag("Echowave"))
         {
-            Debug.Log("Revealed");
             StopAllCoroutines();
             StartCoroutine(Reveal());
         }
@@ -24,8 +26,23 @@ public class EchoReveal : MonoBehaviour
 
     IEnumerator Reveal()
     {
-        sr.color = new Color(1,1,1,1);
-        yield return new WaitForSeconds(5f);
-        sr.color = new Color(1,1,1,0);
+        // FADE IN
+        while (sr.color.a < 1f)
+        {
+            float a = Mathf.MoveTowards(sr.color.a, 1f, fadeSpeed * Time.deltaTime);
+            sr.color = new Color(1, 1, 1, a);
+            yield return null;
+        }
+
+        // STAY VISIBLE
+        yield return new WaitForSeconds(visibleTime);
+
+        // FADE OUT
+        while (sr.color.a > 0f)
+        {
+            float a = Mathf.MoveTowards(sr.color.a, 0f, fadeSpeed * Time.deltaTime);
+            sr.color = new Color(1, 1, 1, a);
+            yield return null;
+        }
     }
 }

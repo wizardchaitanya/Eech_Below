@@ -46,6 +46,9 @@ public class EchoTileReveal : MonoBehaviour
         {
             revealedTiles[cell] -= Time.deltaTime;
 
+            float alpha = Mathf.Clamp01(revealedTiles[cell] / revealDuration);
+            SetTileAlpha(cell, alpha);
+
             if (revealedTiles[cell] <= 0f)
             {
                 SetTileAlpha(cell, 0f);

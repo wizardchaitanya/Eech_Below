@@ -21,7 +21,10 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
+    [Header("Echo Wave")]
     public GameObject echoWavePrefab;
+    public int maxEchoCharges = 3;
+    public int currentEchoCharges;
 
     bool isGrounded;
 
@@ -30,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        currentEchoCharges = maxEchoCharges;
     }
 
     void Update()
@@ -52,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Instantiate(echoWavePrefab, transform.position, Quaternion.identity);
+            TryUseEcho();
         }
     }
 
@@ -64,12 +68,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Gravity()
     {
-        // faster jump by increasing gravity
-        /*if (!isGrounded && rb.velocity.y < 0.01f)
-        {
-            rb.gravityScale = fallGravity;
-        }*/
-
         if (rb.velocity.y < 0)
         {
             rb.gravityScale = baseGravity * fallSpeedMultiplier; // Faster Fall
@@ -79,5 +77,37 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.gravityScale = baseGravity;
         }
+    }
+
+    void TryUseEcho()
+    {
+        if (currentEchoCharges <= 0)
+        {
+            Debug.Log("No echo charges left!");
+            return;
+        }
+
+        currentEchoCharges--;
+
+        Instantiate(echoWavePrefab, transform.position, Quaternion.identity);
+
+        Debug.Log("Echo used. Remaining: " + currentEchoCharges);
+    }
+
+    // 🔋 CALLED BY BATTERIES
+    public void AddEchoCharge(int amount)
+    {
+        currentEchoCharges = Mathf.Clamp(
+            currentEchoCharges + amount,
+            0,
+            maxEchoCharges
+        );
+    }
+
+    // Optional upgrade
+    public void IncreaseMaxEcho(int amount)
+    {
+        maxEchoCharges += amount;
+        currentEchoCharges = maxEchoCharges;
     }
 }
