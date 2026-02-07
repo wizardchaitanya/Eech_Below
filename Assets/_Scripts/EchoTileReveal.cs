@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class EchoTileReveal : MonoBehaviour
 {
-    Tilemap tilemap;
+    Tilemap[] tilemaps;
 
     Dictionary<Vector3Int, float> revealedTiles = new Dictionary<Vector3Int, float>();
     List<Vector3Int> pendingReveal = new List<Vector3Int>();
@@ -13,15 +13,18 @@ public class EchoTileReveal : MonoBehaviour
 
     void Start()
     {
-        tilemap = GetComponent<Tilemap>();
+        tilemaps = GetComponentsInChildren<Tilemap>();
 
         // Make every tile invisible at start
-        foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+        foreach (var tm in tilemaps)
         {
-            if (tilemap.HasTile(pos))
+            foreach (var pos in tm.cellBounds.allPositionsWithin)
             {
-                tilemap.SetTileFlags(pos, TileFlags.None);
-                tilemap.SetColor(pos, new Color(1, 1, 1, 0));
+                if (tm.HasTile(pos))
+                {
+                    tm.SetTileFlags(pos, TileFlags.None);
+                    tm.SetColor(pos, new Color(1, 1, 1, 0));
+                }
             }
         }
     }
@@ -46,8 +49,8 @@ public class EchoTileReveal : MonoBehaviour
         {
             revealedTiles[cell] -= Time.deltaTime;
 
-            float alpha = Mathf.Clamp01(revealedTiles[cell] / revealDuration);
-            SetTileAlpha(cell, alpha);
+            /*float alpha = Mathf.Clamp01(revealedTiles[cell] / revealDuration);
+            SetTileAlpha(cell, alpha);*/
 
             if (revealedTiles[cell] <= 0f)
             {
@@ -59,8 +62,13 @@ public class EchoTileReveal : MonoBehaviour
 
     void SetTileAlpha(Vector3Int cellPos, float alpha)
     {
-        tilemap.SetTileFlags(cellPos, TileFlags.None);
-        tilemap.SetColor(cellPos, new Color(1, 1, 1, alpha));
+        foreach (var tm in tilemaps)
+        {
+            if (!tm.HasTile(cellPos)) continue;
+
+            tm.SetTileFlags(cellPos, TileFlags.None);
+            tm.SetColor(cellPos, new Color(1, 1, 1, alpha));
+        }
     }
 
     // 🚨 IMPORTANT: this no longer touches the dictionary directly

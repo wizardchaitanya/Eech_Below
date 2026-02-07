@@ -8,18 +8,7 @@ public class EchoWave : MonoBehaviour
     public float speed = 10f;
     public float maxSize = 15f;
 
-    EchoWave wave;
-    EchoTileReveal tileReveal;
-    Tilemap tilemap;
-
     float size;
-
-    void Start()
-    {
-        wave = GetComponent<EchoWave>();
-        tileReveal = FindObjectOfType<EchoTileReveal>();
-        tilemap = tileReveal.GetComponent<Tilemap>();
-    }
 
     void Update()
     {
@@ -27,32 +16,45 @@ public class EchoWave : MonoBehaviour
 
         transform.localScale = Vector3.one * size;
 
-        RevelTiles();
-
         if (size >= maxSize)
             Destroy(gameObject);
     }
 
-    void RevelTiles()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        float radius = transform.localScale.x / 2f;
+        EchoEnemyAI enemy = other.GetComponent<EchoEnemyAI>();
+        if (enemy != null)
+        {
+            enemy.HearEcho(transform.position);
+        }
+    }
 
-        Vector3Int centerCell = tilemap.WorldToCell(transform.position);
-        int cellRadius = Mathf.CeilToInt(radius / tilemap.cellSize.x);
+    void OnTriggerStay2D(Collider2D other)
+    {
+        EchoTileReveal reveal = other.GetComponentInParent<EchoTileReveal>();
+        if (reveal == null) return;
+
+        Grid grid = reveal.GetComponent<Grid>();
+        if (grid == null) return;
+
+        CircleCollider2D circle = GetComponent<CircleCollider2D>();
+        float radius = circle.radius * transform.localScale.x;
+
+        Vector3 centerWorld = transform.position;
+        Vector3Int centerCell = grid.WorldToCell(centerWorld);
+
+        int cellRadius = Mathf.CeilToInt(radius / grid.cellSize.x);
 
         for (int x = -cellRadius; x <= cellRadius; x++)
         {
             for (int y = -cellRadius; y <= cellRadius; y++)
             {
                 Vector3Int cell = centerCell + new Vector3Int(x, y, 0);
-                Vector3 worldPos = tilemap.GetCellCenterWorld(cell);
+                Vector3 cellWorld = grid.GetCellCenterWorld(cell);
 
-                if (Vector2.Distance(worldPos, transform.position) <= radius)
+                if (Vector2.Distance(cellWorld, centerWorld) <= radius)
                 {
-                    if (tilemap.HasTile(cell))
-                    {
-                        tileReveal.RevealTile(cell);
-                    }
+                    reveal.RevealTile(cell);
                 }
             }
         }
