@@ -7,6 +7,8 @@ public class EchoEnemyAI : MonoBehaviour
     public float moveSpeed = 2f;
     public float chaseSpeed = 3.5f;
     public float detectionRadius = 1.5f;
+    public string deathReason = "Killed";
+
 
     Transform target;
     Vector3 soundPosition;
@@ -71,6 +73,7 @@ public class EchoEnemyAI : MonoBehaviour
         {
             target = other.transform;
             currentState = State.Chasing;
+            other.GetComponent<PlayerDeath>()?.Die(deathReason);
         }
     }
 

@@ -10,6 +10,7 @@ public class EscapeTimer : MonoBehaviour
     public UnityEvent OnTimeExpired;
 
     bool isRunning = false;
+    public bool IsRunning => isRunning;
 
     void Start()
     {

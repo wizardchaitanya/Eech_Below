@@ -1,10 +1,12 @@
 using System;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private Animator animator;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -12,7 +14,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Gravity")]
     [SerializeField] float baseGravity = 2f;
-    //[SerializeField][Range(1f, 10f)] float fallGravity;
     [SerializeField] float maxFallSpeed = 18f;
     [SerializeField] float fallSpeedMultiplier = 2f;
 
@@ -25,14 +26,18 @@ public class PlayerMovement : MonoBehaviour
     public GameObject echoWavePrefab;
     public int maxEchoCharges = 3;
     public int currentEchoCharges;
+    public TextMeshProUGUI echoCounterText;
 
     bool isGrounded;
 
     float move;
 
+    Transform currentSpawnPoint;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         currentEchoCharges = maxEchoCharges;
     }
 
@@ -52,12 +57,19 @@ public class PlayerMovement : MonoBehaviour
         if (move != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(move), 1, 1);
+            animator.SetBool("isMoving", true);
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryUseEcho();
         }
+
+        echoCounterText.text = $"X {currentEchoCharges:00}";
     }
 
     void FixedUpdate()
@@ -76,6 +88,22 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             rb.gravityScale = baseGravity;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            animator.SetBool("isJumping", false);
+        }
+    }
+
+    public void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            animator.SetBool("isJumping", true);
         }
     }
 
@@ -109,5 +137,15 @@ public class PlayerMovement : MonoBehaviour
     {
         maxEchoCharges += amount;
         currentEchoCharges = maxEchoCharges;
+    }
+
+    public void SetSpawnPoint(Transform spawn)
+    {
+        currentSpawnPoint = spawn;
+    }
+
+    public void Respawn()
+    {
+        transform.position = currentSpawnPoint.position;
     }
 }

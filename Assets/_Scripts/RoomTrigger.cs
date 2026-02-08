@@ -55,6 +55,9 @@ public class RoomTrigger : MonoBehaviour
         {
             currentRoom.DeactivateRoom();
             Destroy(gameObject); // prevent re-trigger
+
+            // Start Timer
+            FindObjectOfType<EscapeTimer>()?.StartTimer();
         }
     }
 }
