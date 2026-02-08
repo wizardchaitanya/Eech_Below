@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlayerDeath : MonoBehaviour
 {
-    bool isDead = false;
+    //bool isDead = false;
 
     public void Die(string reason)
     {
-        if (isDead) return;
-        isDead = true;
+        //if (isDead) return;
+        //isDead = true;
 
         Debug.Log("Player died: " + reason);
 
@@ -22,7 +22,7 @@ public class PlayerDeath : MonoBehaviour
         GetComponent<PlayerMovement>()?.Respawn();
     }
 
-    void Restart()
+    public void Restart()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex

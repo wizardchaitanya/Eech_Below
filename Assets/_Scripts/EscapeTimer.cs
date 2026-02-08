@@ -33,6 +33,7 @@ public class EscapeTimer : MonoBehaviour
             timeRemaining = 0f;
             isRunning = false;
             OnTimeExpired?.Invoke();
+            FindObjectOfType<PlayerDeath>()?.Restart();
         }
     }
 

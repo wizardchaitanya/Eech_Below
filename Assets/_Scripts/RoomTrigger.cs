@@ -7,6 +7,8 @@ public class RoomTrigger : MonoBehaviour
 {
     public Room currentRoom;
     public Room nextRoom;
+    public PlayerMovement player;
+    public GameObject gate;
 
     CameraController cam;
     bool playerInside = false;
@@ -39,6 +41,7 @@ public class RoomTrigger : MonoBehaviour
 
         playerInside = false;
         TryDeactivateRoom();
+        player.enabled = false;
     }
 
     void Update()
@@ -58,6 +61,8 @@ public class RoomTrigger : MonoBehaviour
 
             // Start Timer
             FindObjectOfType<EscapeTimer>()?.StartTimer();
+            player.enabled = true;
+            gate.SetActive(true);
         }
     }
 }

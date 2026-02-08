@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        currentEchoCharges = maxEchoCharges;
+        currentEchoCharges = 4;
     }
 
     void Update()
@@ -50,7 +50,9 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && Input.GetButtonDown("Jump"))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            animator.SetBool("isJumping", true);
         }
+
         Gravity();
         
         // Flip sprite
@@ -67,9 +69,15 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryUseEcho();
+            
         }
 
         echoCounterText.text = $"X {currentEchoCharges:00}";
+
+        if (rb.velocity.y <= 0 && isGrounded)
+        {
+            animator.SetBool("isJumping", false);
+        }
     }
 
     void FixedUpdate()
@@ -91,28 +99,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Ground"))
-        {
-            animator.SetBool("isJumping", false);
-        }
-    }
-
-    public void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Ground"))
-        {
-            animator.SetBool("isJumping", true);
-        }
-    }
-
     void TryUseEcho()
     {
         if (currentEchoCharges <= 0)
         {
             Debug.Log("No echo charges left!");
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.No_Echo);
             return;
+        }
+        else
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.Echo);
         }
 
         currentEchoCharges--;

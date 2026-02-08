@@ -8,6 +8,7 @@ public class EchoReveal : MonoBehaviour
 
     public float fadeSpeed = 3f;
     public float visibleTime = 5f;
+    public bool canKill = false;
 
     void Start()
     {
@@ -21,6 +22,11 @@ public class EchoReveal : MonoBehaviour
         {
             StopAllCoroutines();
             StartCoroutine(Reveal());
+        }
+
+        if (canKill && other.CompareTag("Player"))
+        {
+            other.GetComponent<PlayerDeath>()?.Die("Echo Kill");
         }
     }
 

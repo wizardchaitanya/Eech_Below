@@ -43,6 +43,15 @@ TagManager:
   - name: Background
     uniqueID: 2818212009
     locked: 0
+  - name: Wall
+    uniqueID: 1126257419
+    locked: 0
+  - name: Decor
+    uniqueID: 876056575
+    locked: 0
+  - name: Ground
+    uniqueID: 4147132913
+    locked: 0
   - name: Wave
     uniqueID: 1327473311
     locked: 0
